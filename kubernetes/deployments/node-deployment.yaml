@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cs4783-spring2021-api-deployment
+  labels:
+    app: cs4783-spring2021-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cs4783-spring2021-api
+  template:
+    metadata:
+      labels:
+        app: cs4783-spring2021-api
+    spec:
+      containers:
+        - name: node
+          image: 0295/cs4783-spring2021-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 12005
+          resources:
+      imagePullSecrets:
+        - name: 0295-dockerhub

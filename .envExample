@@ -1,0 +1,11 @@
+# DB Configurations
+HOST=localhost
+DB_USER=
+DB_PASS=
+DB_DATABASE=cs3743_tle728
+DB_TABLE=properties
+DB_CONNECTION_LIMIT=10
+
+# local runtime configs
+PORT=8080
+API_KEY=

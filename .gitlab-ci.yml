@@ -1,0 +1,56 @@
+image: node:latest
+# We tell GitLab to install all the packages
+# before running anything.
+# Docker images come with yarn preinstalled
+stages:
+  - compile
+  - build
+  - UnitTest
+  - deploy
+#------------ compile stage ------------#
+install-dependencies:
+  stage: compile
+  script:
+    - yarn --version
+    - node --version
+    - npm --version
+#------------ build stage ------------#
+run-prebuild:
+  stage: build
+  needs: [install-dependencies]
+  before_script:
+    - yarn
+    - pm2 kill
+  script:
+    - pm2 start src/app.js
+#------------ Test stage ------------#
+test-app:
+  stage: UnitTest
+  needs: [run-prebuild]
+  before_script:
+    - yarn
+    - pm2 kill
+  script:
+    - rm .env
+    - echo "$ENV_MAIN" > .env
+    - pm2 start src/app.js
+    - echo "Mocha + Chai Unit tests\n"
+    - yarn test:dev
+    - cd ./src/test/curl
+    - echo "Curl test time\n"
+    - bash ./curlTests.sh
+#------------ deploy stage ------------#
+deploy:
+  stage: deploy
+  before_script:
+    - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  script:
+    - echo "deploying"
+    - echo "$KUBE_CONFIG" > my_key
+    - kubectl get deployments --kubeconfig my_key
+    - docker build -t 0295/cs4783-spring2021:latest -f src/dockerfiles/Dockerfile_db .
+    - kubectl apply -f kubernetes/deployments/db-deployment.yaml --kubeconfig my_key
+    - docker build -t 0295/cs4783-spring2021-api:latest -f src/dockerfiles/Dockerfile_api .
+    - docker push 0295/cs4783-spring2021-api:latest
+    - kubectl apply -f kubernetes/deployments/node-deployment.yaml --kubeconfig my_key
+    - kubectl rollout restart deployment/cs4783-spring2021-api-deployment --kubeconfig my_key

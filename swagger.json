@@ -1,0 +1,373 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "DevOps",
+        "version": "3.1.0",
+        "title": "CS 4783 DevOps",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "email": "tle728@my.utsa.edu"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "schemes": [
+        "https"
+    ],
+    "paths": {
+        "/hello": {
+            "get": {
+                "tags": [
+                    "hello"
+                ],
+                "summary": "A hello world",
+                "description": "",
+                "operationId": "hello",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A successful response"
+                    }
+                }
+            }
+        },
+        "/properties": {
+            "get": {
+                "tags": [
+                  "properties"
+                ],
+                "summary": "Returns a list of stored US properties (id, address, and zip) ordered by <id>.",
+                "description": "",
+                "operationId": "getproperties",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A successful response"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "properties"
+                ],
+                "summary": "Add a property.",
+                "description": "",
+                "operationId": "addproperties",
+                "security": [{
+                    "ApiKeyHeader": []
+                }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "Data",
+                        "description": "Address must be between 1 and 255 chars.\nCity must be between 1 and 50 chars.\nState must be exactly 2 chars.\nZip must be between 5 and 10 chars.\nAll fields are required.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Properties"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "added"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "example": "<generated id for property>"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "address is not between 1 and 255 characters"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "API key is missing or invalid",
+                        "headers": {
+                            "WWW_Authenticate": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/properties/{id}": {
+            "get": {
+                "tags": [
+                    "properties"
+                ],
+                "summary": "Return detailed info for the property with an id value of <id>.",
+                "description": "",
+                "operationId": "getPropertyById",
+
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "PropertyID",
+                        "in": "query",
+                        "description": "Input a numeric value.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "address": {
+                                    "type": "string",
+                                    "example": "123 Test Ave."
+                                },
+                                "city": {
+                                    "type": "string",
+                                    "example": "San Antonio"
+                                },
+                                "state": {
+                                    "type": "string",
+                                    "example": "TX"
+                                },
+                                "zip":{
+                                    "type": "string",
+                                    "example": "78222"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "(Bad Request)"
+                    },
+                    "404": {
+                        "description": "(Not Found)"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "properties"
+                ],
+                "summary": "Delete the property with an id value of <id>.",
+                "description": "",
+                "operationId": "PropertyID",
+                "security": [{
+                    "ApiKeyHeader": []
+                }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "PropertyID",
+                        "in": "query",
+                        "description": "Input a numeric value.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "Successfully deleted",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "deleted"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "(Bad Request)"
+                    },
+                    "401": {
+                        "description": "API key is missing or invalid",
+                        "headers": {
+                            "WWW_Authenticate": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "(Not Found)"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "properties"
+                ],
+                "summary": "Updates the property with an id value of <id>. Only the fields to be modified need be present in\nthe response data.",
+                "description": "",
+                "operationId": "updatePropertyById",
+                "security": [{
+                    "ApiKeyHeader": []
+                }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "PropertyID",
+                        "description": "Input a numeric value.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "in": "body",
+                        "name": "Data",
+                        "description": "Address must be between 1 and 255 chars.\nCity must be between 1 and 50 chars.\nState must be exactly 2 chars.\nZip must be between 5 and 10 chars.\nAll fields are required.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Properties"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "Successfully updated",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "updated"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "(Bad Request)",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "address is not between 1 and 255 characters"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "API key is missing or invalid",
+                        "headers": {
+                            "WWW_Authenticate": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "(Not Found)"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Properties": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                },
+                "city": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50
+                },
+                "state": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 2
+                },
+                "zip": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 10
+                }
+            }
+        },
+        "ErrorModel": {
+            "required": [
+                "code",
+                "error"
+            ],
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "description": "The HTTP status code."
+                },
+                "error": {
+                    "type": "string",
+                    "description": "A message intended for users that describes the error that occurred."
+                },
+                "help": {
+                    "type": "string",
+                    "description": "A URL to documentation explaining the cause and possibly solutions for this error."
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyHeader": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "api_key"
+        }
+    },
+    "externalDocs": {
+        "description": "Find out more about Swagger",
+        "url": "http://swagger.io"
+    }
+}

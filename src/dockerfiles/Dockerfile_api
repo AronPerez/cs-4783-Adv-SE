@@ -1,0 +1,15 @@
+FROM node:latest
+
+# Create app directory
+WORKDIR /usr/src/app
+# Move important files to working DIR
+COPY *.json ./
+COPY *.lock ./
+COPY . .
+# install dependenc
+# Followed https://dzone.com/articles/how-to-develop-your-nodejs-docker-applications-fas
+EXPOSE 12005
+RUN npm install -g nodemon
+RUN npm install
+#ENTRYPOINT ["nodemon", "/usr/src/app/app.js"]
+CMD ["yarn", "start:dev"]
